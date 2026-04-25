@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overall CGPA Calculator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    margin: 0;
+    padding: 15px;
+    color: white;
+}
+
+/* Main Container */
+.container {
+    max-width: 1000px;
+    margin: auto;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    animation: fadeIn 0.6s ease;
+}
+
+/* Headings */
+h2, h3 {
+    text-align: center;
+    margin: 10px 0;
+}
+
+/* Buttons */
+button {
+    padding: 12px 18px;
+    margin: 8px 5px;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    background: #00e5ff;
+    color: #000;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(0,229,255,0.5);
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th {
+    background: #00bcd4;
+    color: black;
+    padding: 10px;
+    font-size: 14px;
+}
+
+td {
+    padding: 10px;
+    text-align: center;
+    background: rgba(255,255,255,0.05);
+}
+
+/* Inputs */
+input, select {
+    width: 90%;
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+}
+
+/* Title */
+h2 {
+    color: #00e5ff;
+    font-size: 28px;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(15px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* 📱 Mobile Responsive */
+@media (max-width: 768px) {
+
+    .container {
+        padding: 15px;
+    }
+
+    table {
+        font-size: 12px;
+    }
+
+    button {
+        width: 100%;
+        margin: 6px 0;
+    }
+
+    input, select {
+        width: 100%;
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+}
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>GPA & CGPA Calculator</h2>
+        <p id="para-1">Find GPA and CGPA in simplest & fastest way!</p>
+        <h3>🎓 Overall CGPA Calculator</h3>
+        <p>Enter number of semesters to generate table</p>
+        <input type="number" id="numSem" placeholder="e.g. Enter Your Total Semester" min="1">
+        <button id="generateBtn">Generate</button>
+        <button id="backBtn">⬅ Back</button>
+
+        <table id="inputTable" style="width: 100%;">
+            <thead>
+                <tr style="background-color: #17a2b8; color: white">
+                    <th>Semester</th>
+                    <th>GPA</th>
+                    <th>Obtained Marks</th>
+                    <th>Obtained GPA</th>
+                    <th>Total Credits</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <button id="calcBtn" style="display:none;">Calculate Overall CGPA</button>
+        <button id="clearBtn" style="display:none;">Clear</button>
+
+        <table id="outputTable" style="display:none; width: 100%">
+            <thead>
+                <tr id="output-rows">
+                    <th>Semester</th>
+                    <th>GPA</th>
+                    <th>Obtained Marks</th>
+                    <th>Obtained GPA</th>
+                    <th>Total Credits</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                <tr>
+                    <th>Total / Overall</th>
+                    <th id="tGPA">0</th>
+                    <th id="tMarks">0</th>
+                    <th id="tObtGPA">0</th>
+                    <th id="tCredits">0</th>
+                </tr>
+                <tr>
+                    <th colspan="4">Final CGPA</th>
+                    <th id="fCGPA">0.00</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <script>
+        const numSem = document.getElementById("numSem");
+        const inputBody = document.querySelector("#inputTable tbody");
+        const outputBody = document.querySelector("#outputTable tbody");
+
+        document.getElementById("generateBtn").onclick = () => {
+            const n = parseInt(numSem.value);
+            if (isNaN(n) || n <= 0) { alert("Enter valid number!"); return; }
+            inputBody.innerHTML = "";
+            for (let i = 1; i <= n; i++) {
+                let sem = i === 1 ? "1st" : i === 2 ? "2nd" : i === 3 ? "3rd" : i + "th";
+                const row = document.createElement("tr");
+                row.innerHTML = `
+            <td>${sem} Semester</td>
+            <td><input type="number" step="0.01" min="0" max="4" placeholder="GPA"></td>
+            <td><input type="number" step="1" min="0" placeholder="Obt Marks"></td>
+            <td><input type="number" step="0.01" min="0" max="4" placeholder="Obt GPA"></td>
+            <td><input type="number" step="1" min="0" placeholder="Credits"></td>`;
+                inputBody.appendChild(row);
+            }
+            document.getElementById("inputTable").style.display = "table";
+            document.getElementById("calcBtn").style.display = "inline-block";
+            document.getElementById("clearBtn").style.display = "inline-block";
+        };
+
+        document.getElementById("calcBtn").onclick = () => {
+            const rows = inputBody.querySelectorAll("tr");
+            let tGPA = 0, tMarks = 0, tObtGPA = 0, tCredits = 0, n = rows.length;
+            outputBody.innerHTML = "";
+            rows.forEach(r => {
+                const sem = r.cells[0].textContent;
+                const gpa = parseFloat(r.cells[1].querySelector("input").value) || 0;
+                const obtM = parseFloat(r.cells[2].querySelector("input").value) || 0;
+                const obtG = parseFloat(r.cells[3].querySelector("input").value) || 0;
+                const cr = parseFloat(r.cells[4].querySelector("input").value) || 0;
+                tGPA += gpa; tMarks += obtM; tObtGPA += obtG; tCredits += cr;
+                const row = document.createElement("tr");
+                row.innerHTML = `<td>${sem}</td><td>${gpa.toFixed(2)}</td><td>${obtM}</td><td>${obtG.toFixed(2)}</td><td>${cr}</td>`;
+                outputBody.appendChild(row);
+            });
+            const final = (n > 0 ? (tGPA / n).toFixed(2) : "0.00");
+            document.getElementById("tGPA").textContent = tGPA.toFixed(2);
+            document.getElementById("tMarks").textContent = tMarks;
+            document.getElementById("tObtGPA").textContent = tObtGPA.toFixed(2);
+            document.getElementById("tCredits").textContent = tCredits;
+            document.getElementById("fCGPA").textContent = final;
+            document.getElementById("outputTable").style.display = "table";
+        };
+
+        document.getElementById("clearBtn").onclick = () => {
+            numSem.value = ""; inputBody.innerHTML = ""; outputBody.innerHTML = "";
+            document.getElementById("outputTable").style.display = "none";
+            document.getElementById("inputTable").style.display = "none";
+        };
+
+        document.getElementById("backBtn").onclick = () => { window.location.href = "index.html"; };
+    </script>
+</body>
+
+</html>

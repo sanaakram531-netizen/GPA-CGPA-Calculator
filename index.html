@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPA & CGPA Calculator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            margin: 0;
+            padding: 15px;
+            color: white;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            padding: 20px;
+            border-radius: 18px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.6s ease;
+        }
+
+        /* Headings */
+        h2,
+        h3 {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        /* Buttons */
+        button {
+            padding: 12px 18px;
+            margin: 8px 5px;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            background: #00e5ff;
+            color: #000;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.5);
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th {
+            background: #00bcd4;
+            color: black;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 10px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Inputs */
+        input,
+        select {
+            width: 90%;
+            padding: 8px;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+        }
+
+        /* Title */
+        h2 {
+            color: #00e5ff;
+            font-size: 28px;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 📱 Mobile Responsive */
+        @media (max-width: 768px) {
+
+            .container {
+                padding: 15px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            button {
+                width: 100%;
+                margin: 6px 0;
+            }
+
+            input,
+            select {
+                width: 100%;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>GPA & CGPA Calculator</h2>
+        <p id="para-1">Find GPA and CGPA in simplest & fastest way!</p>
+        <h3>GPA Calculator</h3>
+        <table id="inputTable">
+            <thead>
+                <tr>
+                    <th>Subject Name</th>
+                    <th>Obtained Marks</th>
+                    <th>Credit Hours</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <button id="addRowBtn">Add Subject</button>
+        <button id="calculateBtn">Calculate GPA</button>
+        <button id="calculateCgpaBtn">Calculate CGPA</button>
+        <button id="clearBtn">Clear</button>
+
+        <h3>Results</h3>
+        <table id="outputTable">
+            <thead>
+                <tr id="output-rows">
+                    <th>Subject</th>
+                    <th>Obtained Marks</th>
+                    <th>Total Marks</th>
+                    <th>Credit Hours</th>
+                    <th>Percentage</th>
+                    <th>GPA</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot>
+                <tr>
+                    <th>Total / Overall</th>
+                    <th id="totalObt">0</th>
+                    <th id="totalMarks">0</th>
+                    <th id="totalCredits">0</th>
+                    <th id="totalPercent">0%</th>
+                    <th id="cgpa">0</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <script>
+        // DOM elements
+        const inputTableBody = document.querySelector("#inputTable tbody");
+        const outputTableBody = document.querySelector("#outputTable tbody");
+        const addRowBtn = document.getElementById("addRowBtn");
+        const calculateBtn = document.getElementById("calculateBtn");
+        const calculateCgpaBtn = document.getElementById("calculateCgpaBtn");
+        const clearBtn = document.getElementById("clearBtn");
+        const outputTable = document.getElementById("outputTable");
+
+        // GPA scale: 80% and above = 4, etc.
+        function getGPA(percent) {
+            if (percent >= 80) return 4.0;
+            if (percent >= 75) return 3.7;
+            if (percent >= 70) return 3.5;
+            if (percent >= 65) return 3.0;
+            if (percent >= 60) return 2.5;
+            if (percent >= 55) return 2.0;
+            if (percent >= 50) return 1.5;
+            if (percent >= 45) return 1.0;
+            if (percent >= 40) return 0;
+            return 0.0;
+        }
+
+        // Map credit hours to total marks
+        function totalMarksFromCredits(credits) {
+            switch (credits) {
+                case 1: return 20;
+                case 2: return 40;
+                case 3: return 60;
+                case 4: return 80;
+                default: return 0;
+            }
+        }
+
+        // Add subject row
+        function addRow() {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+        <td><input type="text" placeholder="Subject Name"></td>
+        <td><input type="number" min="0" placeholder="Obtained Marks"></td>
+        <td>
+            <select>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="4">4</option>
+            </select>
+        </td>
+        <td><button class="removeBtn">Remove</button></td>
+    `;
+            inputTableBody.appendChild(row);
+            row.querySelector(".removeBtn").addEventListener("click", () => row.remove());
+        }
+
+        // Calculate GPA per subject + totals + CGPA
+        function calculateGPA() {
+            outputTableBody.innerHTML = "";
+            let totalSubjects = 0, totalGPA = 0, totalObt = 0, totalMarks = 0, totalCredits = 0;
+
+            const rows = inputTableBody.querySelectorAll("tr");
+            if (rows.length === 0) { alert("Add subjects first!"); return; }
+
+            rows.forEach(r => {
+                const subject = r.cells[0].querySelector("input").value || "N/A";
+                const obtained = parseFloat(r.cells[1].querySelector("input").value) || 0;
+                const credit = parseInt(r.cells[2].querySelector("select").value);
+                const maxMarks = totalMarksFromCredits(credit);
+
+                const percent = (obtained / maxMarks) * 100;
+                const gpa = getGPA(percent);
+
+
+
+                totalObt += obtained;
+                totalMarks += maxMarks;
+                totalCredits += credit;
+                totalGPA += gpa;
+                totalSubjects += 1;
+
+                const outRow = document.createElement("tr");
+                outRow.innerHTML = `
+            <td>${subject}</td>
+            <td>${obtained.toFixed(1)}</td>
+            <td>${maxMarks}</td>
+            <td>${credit}</td>
+            <td>${percent.toFixed(1)}%</td>
+            <td>${gpa.toFixed(2)}</td>
+        `;
+                outputTableBody.appendChild(outRow);
+            });
+
+            const overallPercent = (totalMarks > 0) ? ((totalObt / totalMarks) * 100).toFixed(2) : 0;
+            const cgpa = (totalSubjects > 0) ? (totalGPA / totalSubjects).toFixed(2) : "0.00";
+
+            document.getElementById("totalObt").textContent = totalObt.toFixed(1);
+            document.getElementById("totalMarks").textContent = totalMarks;
+            document.getElementById("totalCredits").textContent = totalCredits;
+            document.getElementById("totalPercent").textContent = overallPercent + "%";
+            document.getElementById("cgpa").textContent = cgpa;
+
+            outputTable.style.display = "table";
+        }
+
+        // Clear table
+        function clearEntries() {
+            inputTableBody.innerHTML = "";
+            outputTableBody.innerHTML = "";
+            document.getElementById("totalObt").textContent = "0";
+            document.getElementById("totalMarks").textContent = "0";
+            document.getElementById("totalCredits").textContent = "0";
+            document.getElementById("totalPercent").textContent = "0%";
+            document.getElementById("cgpa").textContent = "0";
+            outputTable.style.display = "none";
+            addRow();
+        }
+
+        // Initialize
+        addRow();
+        addRowBtn.addEventListener("click", addRow);
+        calculateBtn.addEventListener("click", calculateGPA);
+        clearBtn.addEventListener("click", clearEntries);
+
+
+        // 🔹 Navigate to Overall CGPA Page
+        document.getElementById("calculateCgpaBtn").onclick = () => {
+            window.location.href = "cgpa.html";
+        };
+    </script>
+</body>
+
+</html>
